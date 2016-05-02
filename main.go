@@ -21,19 +21,28 @@ func Get(url string) (int, error) {
 }
 
 func Runner(i int) chan int {
+	out := make(chan int)
+
 	s := fmt.Sprintf("%d", i)
 	status, err := Get("http://www.dmvroll.com/node/" + s)
 	if err != nil {
-		return <-0
+		out <- 0
+		fmt.Printf("nid: %d error\n", i)
+		return out
 	}
-	return <-status
+
+	fmt.Printf("nid: %d\n", i)
+
+	out <- status
+	return out
 }
 
 func main() {
-	id := make(<-chan int)
+	// id := make(<-chan int)
 	done := make(<-chan int)
 
-	for i := 0; i < 100; i++ {
+	for i := 5000; i <= 50000; i++ {
+		fmt.Printf("%d started\n", i)
 		go Runner(i)
 	}
 
